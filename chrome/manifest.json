@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Tidal Controller",
+  "version": "1.0.0",
+  "description": "Simple Tidal music controller",
+
+  "permissions": ["storage", "tabs", "activeTab"],
+
+  "host_permissions": [
+    "*://*.tidal.com/*",
+    "http://localhost:*/*",
+    "http://127.0.0.1:*/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.tidal.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Tidal Controller"
+  }
+}

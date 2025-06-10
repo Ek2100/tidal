@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 320px;
+      min-height: 200px;
+      padding: 0;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      background: #f8f9fa;
+      color: #1f2937;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+    }
+
+    .status-dot.disconnected {
+      background: #f87171;
+    }
+
+    .track-info {
+      padding: 16px;
+      background: white;
+      margin: 12px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .track-title {
+      font-weight: 600;
+      font-size: 15px;
+      color: #1f2937;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .track-artist {
+      color: #6b7280;
+      font-size: 13px;
+      margin-bottom: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .track-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .play-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    .play-indicator.paused {
+      background: #f59e0b;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      padding: 0 12px 16px;
+    }
+
+    .control-btn {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #374151;
+    }
+
+    .control-btn:hover {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+    }
+
+    .control-btn:active {
+      transform: scale(0.98);
+    }
+
+    .control-btn.primary {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+
+    .control-btn.primary:hover {
+      background: #2563eb;
+    }
+
+    .settings {
+      display: flex;
+      gap: 8px;
+      padding: 0 12px 16px;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 11px;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    .toggle-btn.active {
+      background: #eff6ff;
+      border-color: #3b82f6;
+      color: #3b82f6;
+    }
+
+    .toggle-btn:hover {
+      background: #f9fafb;
+    }
+
+    .no-track {
+      text-align: center;
+      padding: 24px 16px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .icon {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    .auth-section {
+      padding: 20px;
+      text-align: center;
+      background: white;
+      margin: 12px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .auth-section h4 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 16px;
+      color: #1f2937;
+    }
+
+    .auth-section p {
+      margin: 0 0 16px;
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    #authTokenInput {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 13px;
+      box-sizing: border-box;
+    }
+
+    #authTokenInput:focus {
+      border-color: #3b82f6;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    #saveAuthTokenBtn {
+      width: 100%;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    #saveAuthTokenBtn:hover {
+      background: #2563eb;
+    }
+
+    .auth-error-message {
+      color: #ef4444;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    #showAuthBtn {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      color: #374151;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+
+    #showAuthBtn:hover {
+      background: #e5e7eb;
+      border-color: #cbd5e1;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="auth-section" class="auth-section" style="display: none;">
+    <h4>Authentication Required</h4>
+    <p>Enter the Local API Auth Token from your Raycast extension preferences to connect.</p>
+    <input type="password" id="authTokenInput" placeholder="Paste your token here">
+    <button id="saveAuthTokenBtn">Save Token</button>
+    <p id="auth-error" class="auth-error-message" style="display: none;"></p>
+  </div>
+
+  <div id="main-content" style="display: none;">
+    <div class="header">
+      <h3>Tidal Controller</h3>
+      <button id="showAuthBtn">Re-Authenticate</button>
+      <div class="status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Connecting...</span>
+      </div>
+    </div>
+
+    <div id="trackInfo" class="track-info" style="display: none;">
+      <div class="track-title" id="trackTitle">No track</div>
+      <div class="track-artist" id="trackArtist">No artist</div>
+      <div class="track-status">
+        <div class="play-indicator" id="playIndicator"></div>
+        <span id="trackStatus">Stopped</span>
+      </div>
+    </div>
+
+    <div id="noTrack" class="no-track">
+      <p>🎵 Open Tidal and play a song</p>
+    </div>
+
+    <div class="controls">
+      <button class="control-btn" id="prevBtn">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+        </svg>
+        Prev
+      </button>
+      <button class="control-btn primary" id="playPauseBtn">
+        <svg class="icon" id="playIcon" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+        <svg class="icon" id="pauseIcon" viewBox="0 0 24 24" style="display: none;">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+        </svg>
+        <span id="playPauseText">Play</span>
+      </button>
+      <button class="control-btn" id="nextBtn">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+        </svg>
+        Next
+      </button>
+    </div>
+
+    <div class="settings">
+      <button class="toggle-btn" id="likeBtn">♡ Like</button>
+      <button class="toggle-btn" id="shuffleBtn">🔀 Shuffle</button>
+      <button class="toggle-btn" id="reportingBtn">📡 Reporting</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>
