@@ -2,14 +2,12 @@ let currentTrackData = null
 let isReportingPaused = false
 let refreshInterval = null
 
-// UI Elements
 const authSection = document.getElementById("auth-section")
 const mainContent = document.getElementById("main-content")
 const authTokenInput = document.getElementById("authTokenInput")
 const saveAuthTokenBtn = document.getElementById("saveAuthTokenBtn")
 const authError = document.getElementById("auth-error")
 
-// Update UI with track data
 function updateUI(trackData) {
   const trackInfo = document.getElementById("trackInfo")
   const noTrack = document.getElementById("noTrack")
@@ -60,7 +58,6 @@ function updateUI(trackData) {
   currentTrackData = trackData
 }
 
-// Update connection status
 function updateConnectionStatus(connected) {
   const statusDot = document.getElementById("statusDot")
   const statusText = document.getElementById("statusText")
@@ -74,7 +71,6 @@ function updateConnectionStatus(connected) {
   }
 }
 
-// Send command to content script
 async function sendCommand(action) {
   try {
     const tabs = await window.chrome.tabs.query({ url: "*://*.tidal.com/*" })
@@ -89,7 +85,6 @@ async function sendCommand(action) {
   }
 }
 
-// Load current data
 function loadData() {
   window.chrome.runtime.sendMessage({ type: "GET_CURRENT_TRACK" }, (response) => {
     if (window.chrome.runtime.lastError) {
@@ -106,7 +101,6 @@ function loadData() {
   })
 }
 
-// Toggle reporting
 function toggleReporting() {
   isReportingPaused = !isReportingPaused
   const reportingBtn = document.getElementById("reportingBtn")
@@ -139,9 +133,7 @@ function showAuthSection() {
 
 document.getElementById('showAuthBtn').addEventListener('click', showAuthSection);
 
-// Initialize popup
 document.addEventListener("DOMContentLoaded", () => {
-  // Check for auth token first
   window.chrome.storage.local.get(["localApiAuthToken"], (result) => {
     if (result.localApiAuthToken) {
       showMainContent()
@@ -150,7 +142,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-  // Save Auth Token
   saveAuthTokenBtn.addEventListener("click", () => {
     const token = authTokenInput.value.trim()
     if (token) {
@@ -165,7 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-  // Control buttons
   document.getElementById("playPauseBtn").addEventListener("click", () => {
     const action = currentTrackData?.isPlaying ? "pause" : "play"
     sendCommand(action)
@@ -182,7 +172,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("reportingBtn").addEventListener("click", toggleReporting)
 })
 
-// Listen for updates from background
 window.chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "TRACK_DATA_UPDATE") {
     updateUI(message.data)

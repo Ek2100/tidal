@@ -5,20 +5,17 @@ let commandCheckInterval = null
 let isReportingPaused = false
 let cachedPlaylists = []
 
-// Configuration
 const API_BASE_URL = "http://localhost:3049"
 const COMMAND_CHECK_INTERVAL = 200
 const TRACK_UPDATE_DEBOUNCE = 1000
 const PAUSED_UPDATE_DEBOUNCE = 3000
-const STALE_DATA_TIMEOUT = 10 * 60 * 1000 // 10 minutes
+const STALE_DATA_TIMEOUT = 10 * 60 * 1000
 
-// Logging function
 function log(message, type = "info") {
   const timestamp = new Date().toLocaleTimeString()
   console.log(`[${timestamp}] ${message}`)
 }
 
-// Helper to get auth token from storage
 async function getAuthToken() {
   return new Promise((resolve) => {
     chrome.storage.local.get(["localApiAuthToken"], (result) => {
@@ -27,7 +24,6 @@ async function getAuthToken() {
   })
 }
 
-// Send track data to API server
 async function sendTrackDataToAPI(data) {
   const token = await getAuthToken()
   if (!token) {
@@ -39,7 +35,6 @@ async function sendTrackDataToAPI(data) {
     return false
   }
 
-  // Check if data is stale (paused for more than 10 minutes)
   const now = Date.now()
   const stateAge = data.lastStateChangeTime ? now - data.lastStateChangeTime : 0
   const isStale = !data.isPlaying && stateAge > STALE_DATA_TIMEOUT
@@ -79,7 +74,6 @@ async function sendTrackDataToAPI(data) {
     lastTrackUpdateTime = now
     log(`Track data sent successfully: ${result.message}`)
 
-    // Notify popup
     chrome.runtime
       .sendMessage({
         type: "TRACK_DATA_UPDATE",
@@ -96,11 +90,9 @@ async function sendTrackDataToAPI(data) {
   }
 }
 
-// Check for commands from API server
 async function checkForCommandsFromAPI() {
   const token = await getAuthToken()
   if (!token) {
-    // Don't log every 200ms, just fail silently if no token
     return
   }
 
@@ -149,11 +141,10 @@ async function checkForCommandsFromAPI() {
       }
     }
   } catch (error) {
-    // Silently fail for command checking to avoid spam
+    // get out
   }
 }
 
-// Start command checking loop
 function startCommandChecking() {
   if (commandCheckInterval) {
     clearInterval(commandCheckInterval)
@@ -162,7 +153,6 @@ function startCommandChecking() {
   log("Started command checking loop")
 }
 
-// Listen for messages
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "PING") {
     sendResponse({ success: true, timestamp: Date.now() })
@@ -175,7 +165,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const now = Date.now()
     const isPlaying = message.data && message.data.isPlaying
 
-    // Smart debouncing: less aggressive for paused tracks, but still send updates
     const debounceTime = isPlaying ? TRACK_UPDATE_DEBOUNCE : PAUSED_UPDATE_DEBOUNCE
 
     if (now - lastTrackUpdateTime < debounceTime) {
@@ -216,7 +205,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 })
 
-// Handle tab updates
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url && tab.url.includes("tidal.com")) {
     log(`Tidal tab updated: ${tab.url}`)
@@ -228,7 +216,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 })
 
-// Initialize
 chrome.runtime.onStartup.addListener(() => {
   log("Extension started")
   initialize()
@@ -243,10 +230,8 @@ async function initialize() {
   log("Initializing background script...")
   log(`API server URL: ${API_BASE_URL}`)
 
-  // Clear any old data
   await chrome.storage.local.clear()
 
-  // Check for existing Tidal tabs
   try {
     const tabs = await chrome.tabs.query({ url: "*://*.tidal.com/*" })
     log(`Found ${tabs.length} Tidal tabs`)
@@ -266,7 +251,6 @@ async function initialize() {
   startCommandChecking()
 }
 
-// Cleanup
 chrome.runtime.onSuspend.addListener(() => {
   log("Extension suspending, cleaning up...")
   if (commandCheckInterval) {
