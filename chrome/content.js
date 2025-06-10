@@ -1,4 +1,3 @@
-// Prevent multiple injections
 ;(() => {
   if (window.tidalControllerInjected) {
     console.log("[Tidal Content] Already injected, skipping")
@@ -13,20 +12,17 @@
   let messageListenerSetup = false
   let chrome
 
-  // Constants
-  const MONITOR_INTERVAL = 1500 // Check every 1.5 seconds
-  const FORCE_UPDATE_INTERVAL = 3000 // Force update every 3 seconds
-  const STALE_DATA_TIMEOUT = 10 * 60 * 1000 // 10 minutes
+  const MONITOR_INTERVAL = 1500 
+  const FORCE_UPDATE_INTERVAL = 3000 
+  const STALE_DATA_TIMEOUT = 10 * 60 * 1000 
   const MAX_RETRIES = 3
   let retryCount = 0
   let forceUpdateInterval = null
   let lastPlayingState = null
   let lastStateChangeTime = Date.now()
 
-  // Enhanced command mappings with better play/pause detection
   const COMMAND_MAP = {
     play: () => {
-      // First, get current playing state to determine what button to look for
       const trackData = getTidalData()
       const isCurrentlyPlaying = trackData ? trackData.isPlaying : false
 
@@ -37,7 +33,6 @@
         return true
       }
 
-      // Look specifically for the play button when paused
       const playSelectors = [
         'button[data-test="play"][aria-label="Play"]',
         'button[data-test="play"]',
@@ -70,7 +65,6 @@
     },
 
     pause: () => {
-      // Look specifically for the pause button when playing
       const pauseSelectors = [
         'button[data-test="pause"][aria-label="Pause"]',
         'button[data-test="pause"]',
@@ -108,7 +102,6 @@
       clickButtonWithFallbacks(['[data-test="repeat"]', '[aria-label="Repeat"]', 'button[data-type*="repeat"]']),
   }
 
-  // Debug function to log all play/pause buttons found
   function debugPlayPauseButtons() {
     log("=== DEBUG: All play/pause buttons ===")
 
@@ -217,9 +210,7 @@
     return false
   }
 
-  // Enhanced play/pause detection to avoid restart buttons
   function findPlayPauseButton(isCurrentlyPlaying) {
-    // Look specifically in the footer player area
     const footerPlayer =
       document.querySelector('[data-test="footer-player"]') || document.querySelector('[id="footerPlayer"]')
 
@@ -228,7 +219,6 @@
       return null
     }
 
-    // Try to find the main play/pause toggle button
     const playPauseSelectors = [
       '[data-test="footer-player"] button[data-test="play"]',
       '[data-test="footer-player"] button[data-test="pause"]',
@@ -243,11 +233,9 @@
     for (const selector of playPauseSelectors) {
       const button = footerPlayer.querySelector(selector) || document.querySelector(selector)
       if (button && button.offsetParent !== null && !button.disabled) {
-        // Additional check: make sure it's not a track-specific play button
         const buttonText = button.textContent?.toLowerCase() || ""
         const ariaLabel = button.getAttribute("aria-label")?.toLowerCase() || ""
 
-        // Skip buttons that seem to be track-specific
         if (
           buttonText.includes("play track") ||
           buttonText.includes("play album") ||
@@ -266,7 +254,6 @@
   }
 
 function createEdgeLightingEffect(targetElement) {
-    // If no element provided, try to find the footer player
     if (!targetElement) {
         targetElement = document.getElementById('footerPlayer') || document.querySelector('[data-test="footer-player"]');
     }
@@ -279,7 +266,6 @@ function createEdgeLightingEffect(targetElement) {
     const existingEffect = document.getElementById("edge-lighting-effect")
     if (existingEffect) existingEffect.remove()
 
-    // Get element's position and dimensions
     const rect = targetElement.getBoundingClientRect()
     const scrollX = window.pageXOffset || document.documentElement.scrollLeft
     const scrollY = window.pageYOffset || document.documentElement.scrollTop
@@ -307,11 +293,9 @@ function createEdgeLightingEffect(targetElement) {
 
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
     
-    // Inset distance from element edges and inner radius
-    const inset = 4  // Distance from element edges
-    const innerRadius = 8  // Inner corner radius
+    const inset = 4 
+    const innerRadius = 8  
 
-    // Calculate inner rectangle coordinates
     const x1 = inset
     const y1 = inset
     const x2 = w - inset
@@ -399,7 +383,6 @@ function createEdgeLightingEffect(targetElement) {
     }, 1200)
 }
 
-  // FIXED: Enhanced track data extraction - ALWAYS returns data when track is available
   function getTidalData() {
     const now = Date.now()
 
@@ -419,7 +402,6 @@ function createEdgeLightingEffect(targetElement) {
         return null
       }
 
-      // Enhanced play state detection
       const playbackState = footerPlayer.getAttribute("data-test-playback-state")
       const pauseButton =
         document.querySelector('[data-test="pause"]') || document.querySelector('[aria-label="Pause"]')
@@ -430,14 +412,12 @@ function createEdgeLightingEffect(targetElement) {
         (pauseButton && pauseButton.offsetParent !== null) ||
         (playButton && playButton.offsetParent === null)
 
-      // Track state changes
       if (lastPlayingState !== isPlaying) {
         log(`Play state changed: ${lastPlayingState} -> ${isPlaying}`)
         lastPlayingState = isPlaying
         lastStateChangeTime = now
       }
 
-      // Enhanced selectors for title and artist
       const titleSelectors = [
         '[data-test="footer-track-title"] .wave-text-description-demi',
         '[data-test="footer-track-title"] a span[data-wave-color="textDefault"]',
@@ -466,7 +446,7 @@ function createEdgeLightingEffect(targetElement) {
             break
           }
         } catch (e) {
-          // Continue to next selector
+          // Get out
         }
       }
 
@@ -477,7 +457,7 @@ function createEdgeLightingEffect(targetElement) {
             break
           }
         } catch (e) {
-          // Continue to next selector
+          // Get out
         }
       }
 
@@ -492,13 +472,11 @@ function createEdgeLightingEffect(targetElement) {
         return null
       }
 
-      // Get additional track info
       const currentTimeEl = document.querySelector('[data-test="current-time"]')
       const durationEl = document.querySelector('[data-test="duration"]')
       const currentTime = currentTimeEl?.textContent?.trim() || "0:00"
       const duration = durationEl?.textContent?.trim() || "0:00"
 
-      // Get control states
       const favoriteBtn = document.querySelector('[data-test="footer-favorite-button"]')
       const shuffleBtn = document.querySelector('[data-test="shuffle"]')
       const repeatBtn = document.querySelector('[data-test="repeat"]')
@@ -528,7 +506,6 @@ function createEdgeLightingEffect(targetElement) {
         document.querySelector('[data-test="current-media-imagery"] img')
       const imageUrl = imageEl?.src || ""
 
-      // IMPORTANT: Always return data object, regardless of play state
       const data = {
         title,
         artist,
@@ -555,7 +532,6 @@ function createEdgeLightingEffect(targetElement) {
   function executeCommand(action, commandId) {
     log(`Executing command: ${action}`)
 
-    // Add debugging for play/pause commands
     if (action === "play" || action === "pause") {
       debugPlayPauseButtons()
     }
@@ -571,7 +547,6 @@ function createEdgeLightingEffect(targetElement) {
 
       if (success) {
         log(`Command ${action} executed successfully`)
-        // Force immediate update after command
         setTimeout(sendTrackUpdate, 100)
         return { success: true, action }
       } else {
@@ -584,7 +559,6 @@ function createEdgeLightingEffect(targetElement) {
     }
   }
 
-  // FIXED: Always send updates, but respect stale data timeout
   function sendTrackUpdate(force = false) {
     if (!extensionContextValid) {
       return
@@ -595,10 +569,8 @@ function createEdgeLightingEffect(targetElement) {
       return
     }
 
-    // Calculate how long the track has been in its current state
     const stateAge = Date.now() - trackData.lastStateChangeTime
 
-    // Only consider data stale if it's been paused for 10 minutes
     const isStale = !trackData.isPlaying && stateAge > STALE_DATA_TIMEOUT
 
     if (isStale) {
@@ -606,7 +578,6 @@ function createEdgeLightingEffect(targetElement) {
       return
     }
 
-    // Send updates when forced or when data changes
     const hasChanged =
       !lastTrackData ||
       JSON.stringify({ ...trackData, timestamp: 0, lastStateChangeTime: 0 }) !==
@@ -692,12 +663,10 @@ function createEdgeLightingEffect(targetElement) {
       clearInterval(forceUpdateInterval)
     }
 
-    // Regular monitoring
     monitoringInterval = setInterval(() => {
       sendTrackUpdate()
     }, MONITOR_INTERVAL)
 
-    // Force updates to ensure we don't miss anything
     forceUpdateInterval = setInterval(() => {
       sendTrackUpdate(true)
     }, FORCE_UPDATE_INTERVAL)
@@ -776,7 +745,6 @@ function createEdgeLightingEffect(targetElement) {
       setTimeout(checkPageReady, 300)
     }
 
-    // URL change monitoring
     let lastUrl = window.location.href
     const urlCheckInterval = setInterval(() => {
       if (window.location.href !== lastUrl) {
@@ -798,7 +766,6 @@ function createEdgeLightingEffect(targetElement) {
       }
     }, 500)
 
-    // Cleanup on page unload
     window.addEventListener("beforeunload", () => {
       if (monitoringInterval) clearInterval(monitoringInterval)
       if (forceUpdateInterval) clearInterval(forceUpdateInterval)
