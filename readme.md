@@ -1,24 +1,25 @@
 # Tidal Raycast Integration
 
-This project lets you control the Tidal web player directly from Raycast using a local API server and a Chrome extension.
+This project enables control of the Tidal web player directly from Raycast, using a local server as a bridge.
 
----
+## 📁 Structure
 
-## 🔧 How It Works
+- `raycast-extension/` – The Raycast extension UI and commands for controlling Tidal.
+- `chrome-extension/` – The Chrome extension that communicates with the Tidal web player.
 
-There are two components:
+## ⚙️ How It Works
 
-- **Raycast Extension** (`tidalextension` branch):  
-  Lets you control Tidal and view track info from Raycast.
+1. The **Chrome extension** sends real-time track data to the local server.
+2. The **Raycast extension** fetches this data and sends playback commands through the server which it hosts.
 
-- **Chrome Extension** (`chromeextension` branch):  
-  Connects to the Tidal web player and communicates with the local server.
+## 🚀 Getting Started
 
----
+You **don’t need to clone this repo** to use the integration.
 
-## 📂 Getting the Code
+- The **Raycast extension** is available on [Raycast](https://www.raycast.com/Ek217/tidal) under `Ek217/Tidal`.
+- The **Chrome extension** can be downloaded as a ZIP file from the [Releases section of this repo](https://github.com/Ek2100/tidal/releases).
 
-To get started, switch to the appropriate branch:
+If you want to explore or contribute to the code, you can explore the repo (please note any contributions to the raycast extension should also be made on the [Raycast Extensions](https://github.com/raycast/extensions) page):
 
-- Raycast Extension: [tidalextension](https://github.com/Ek2100/tidal/tree/tidalextension)
-- Chrome Extension: [chromeextension](https://github.com/Ek2100/tidal/tree/chromeextension)
+```bash
+git clone https://github.com/Ek2100/tidal.git
