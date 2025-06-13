@@ -6,7 +6,7 @@ let isReportingPaused = false
 let cachedPlaylists = []
 
 const API_BASE_URL = "http://localhost:3049"
-const COMMAND_CHECK_INTERVAL = 200
+const COMMAND_CHECK_INTERVAL = 1000
 const TRACK_UPDATE_DEBOUNCE = 1000
 const PAUSED_UPDATE_DEBOUNCE = 3000
 const STALE_DATA_TIMEOUT = 10 * 60 * 1000
