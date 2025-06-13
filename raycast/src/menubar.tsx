@@ -208,8 +208,6 @@ export default function Command() {
           {serverStatus === "connected" && serverUptime > 0 && (
             <MenuBarExtra.Item title={`Uptime: ${formatUptime(serverUptime)}`} icon={Icon.Hourglass} />
           )}
-
-
         </MenuBarExtra.Submenu>
       </MenuBarExtra.Section>
     </MenuBarExtra>
