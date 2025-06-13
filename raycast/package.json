@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "tidalext",
+  "name": "tidal",
   "title": "Tidal",
   "description": "Control Tidal playback and view track info directly from Raycast with seamless integration.",
   "icon": "extension-icon.png",
